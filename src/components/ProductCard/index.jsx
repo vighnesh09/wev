@@ -6,26 +6,47 @@ import {
   Box,
   Rating,
   Chip,
-  Stack
+  Stack,
+  IconButton,
+  Tooltip,
+  alpha,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { motion } from 'framer-motion';
 
 const ProductCard = ({ product }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const discountedPrice = product.price * (1 - product.discount / 100);
 
   const cardStyles = {
+    width: {md: 300, xs: '100%'},
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    overflow: 'hidden',
+    transition: 'all 0.3s ease-in-out',
+    backgroundColor: '#fff',
     '&:hover': {
-      transform: 'translateY(-8px)',
-      boxShadow: '0 8px 40px -12px rgba(0,0,0,0.3)'
+      transform: isMobile ? 'none' : 'translateY(-8px)',
+      boxShadow: theme.shadows[8],
+      '& .product-image': {
+        transform: 'scale(1.05)'
+      }
     }
   };
 
   const imageContainerStyles = {
     position: 'relative',
-    paddingTop: '133%' // 4:3 Aspect Ratio
+    width: '100%',
+    paddingTop: '100%', // 1:1 Aspect ratio
+    backgroundColor: alpha(theme.palette.common.black, 0.02),
+    overflow: 'hidden'
   };
 
   const imageStyles = {
@@ -35,41 +56,71 @@ const ProductCard = ({ product }) => {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    objectPosition: 'center',
+    transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
   };
 
   const badgeStyles = {
     position: 'absolute',
-    top: 12,
-    left: 12,
+    top: isMobile ? 8 : 12,
+    left: isMobile ? 8 : 12,
     zIndex: 1,
     display: 'flex',
-    gap: 1
+    gap: 0.5,
+    flexWrap: 'wrap',
+    maxWidth: '70%'
   };
 
-  const chipStyles = {
-    bgcolor: 'rgba(255, 255, 255, 0.9)',
-    fontWeight: 600
+  const actionsStyles = {
+    position: 'absolute',
+    right: isMobile ? 8 : 12,
+    top: isMobile ? 8 : 12,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.5,
+    opacity: isMobile ? 1 : 0,
+    transform: 'translateY(0)',
+    transition: 'all 0.3s ease-in-out',
+    zIndex: 2,
+  };
+
+  const contentStyles = {
+    flexGrow: 1,
+    padding: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    '&:last-child': {
+      paddingBottom: theme.spacing(2)
+    }
   };
 
   return (
-    <Card sx={cardStyles}>
-      {/* Image Section with Badges */}
+    <Card 
+      sx={cardStyles}
+      component={motion.div}
+      whileHover={{ y: isMobile ? 0 : -8 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      {/* Image Section */}
       <Box sx={imageContainerStyles}>
         <CardMedia
           component="img"
           image={product.image}
           alt={product.name}
           sx={imageStyles}
+          className="product-image"
         />
-        {/* Badge Overlay */}
+        {/* Badges */}
         <Box sx={badgeStyles}>
           {product.isNew && (
             <Chip 
               size="small" 
               color="secondary" 
               label="New"
-              sx={chipStyles}
+              sx={{ 
+                bgcolor: 'secondary.main',
+                color: 'white',
+                fontWeight: 600
+              }}
             />
           )}
           {product.isBestseller && (
@@ -77,126 +128,94 @@ const ProductCard = ({ product }) => {
               size="small" 
               color="primary" 
               label="Bestseller"
-              sx={chipStyles}
+              sx={{ 
+                bgcolor: 'primary.main',
+                color: 'white',
+                fontWeight: 600
+              }}
             />
           )}
+        </Box>
+        {/* Quick Actions */}
+        <Box sx={actionsStyles} className="product-actions">
+          <Tooltip title="Add to Wishlist">
+            <IconButton 
+              size="small"
+              sx={{ 
+                bgcolor: 'white',
+                '&:hover': { bgcolor: 'white' }
+              }}
+            >
+              <FavoriteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Add to Cart">
+            <IconButton 
+              size="small"
+              sx={{ 
+                bgcolor: 'white',
+                '&:hover': { bgcolor: 'white' }
+              }}
+            >
+              <ShoppingCartIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
 
       {/* Content Section */}
-      <CardContent sx={{ flexGrow: 1, p: 3 }}>
-        {/* Product Name */}
+      <CardContent sx={contentStyles}>
         <Typography 
-          variant="h6" 
-          component="h2"
-          sx={{ 
+          variant="h6"
+          sx={{
+            fontSize: { xs: '1rem', sm: '1.1rem' },
             fontWeight: 600,
-            fontSize: '1.1rem',
-            mb: 2
+            mb: 1,
+            height: '2.4em',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical'
           }}
         >
           {product.name}
         </Typography>
 
-        {/* Rating */}
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 1.5 }}>
           <Rating 
             value={product.rating} 
-            precision={0.1} 
-            readOnly 
+            precision={0.5} 
             size="small" 
+            readOnly 
           />
-          <Typography 
-            variant="body2" 
-            color="text.secondary"
-            sx={{ mt: 0.5 }}
-          >
-            ({product.rating})
-          </Typography>
         </Box>
 
-        {/* Product Details */}
         <Typography 
           variant="body2" 
-          color="text.secondary" 
-          sx={{ mb: 2 }}
+          color="text.secondary"
+          sx={{ mb: 2, fontSize: '0.875rem' }}
         >
-          {product.gender} • {product.size} • {product.category}
+          {product.category} • {product.size}
         </Typography>
 
-        {/* Price Section */}
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            mb: 2
-          }}
-        >
-          {product.discount > 0 ? (
-            <>
-              <Typography
-                variant="h6"
-                color="primary"
-                fontWeight="bold"
-              >
-                ${discountedPrice.toFixed(2)}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ textDecoration: 'line-through' }}
-              >
-                ${product.price.toFixed(2)}
-              </Typography>
+        <Box sx={{ mt: 'auto' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <Typography 
+              variant="h6" 
+              color="primary.main"
+              sx={{ fontWeight: 600 }}
+            >
+              ₹{product.price.toFixed(2)}
+            </Typography>
+            {product.discount > 0 && (
               <Chip 
                 size="small" 
                 color="error" 
                 label={`-${product.discount}%`}
               />
-            </>
-          ) : (
-            <Typography 
-              variant="h6" 
-              color="primary" 
-              fontWeight="bold"
-            >
-              ${product.price.toFixed(2)}
-            </Typography>
-          )}
-        </Box>
-
-        {/* Footer Section */}
-        <Box sx={{ mt: 'auto' }}>
-          {/* Stock Status */}
-          <Typography 
-            variant="body2" 
-            color={product.stock < 5 ? "error" : "text.secondary"}
-            sx={{ mb: 1 }}
-          >
-            {product.stock} in stock
-          </Typography>
-
-          {/* Tags */}
-          <Stack 
-            direction="row" 
-            spacing={0.5} 
-            flexWrap="wrap" 
-            gap={0.5}
-          >
-            {product.tags.map((tag) => (
-              <Chip 
-                key={tag} 
-                label={tag} 
-                size="small" 
-                variant="outlined"
-                sx={{ 
-                  borderRadius: '4px',
-                  height: '24px'
-                }}
-              />
-            ))}
-          </Stack>
+            )}
+          </Box>
         </Box>
       </CardContent>
     </Card>

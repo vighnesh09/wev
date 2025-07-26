@@ -226,33 +226,76 @@ const perfumeProducts = [
     tags: ["Woodsy", "Elegant", "Day‑to‑Night"],
     sku: "CD075M",
   },
-  {
-    id: 15,
-    name: "Vanilla Patchouli",
-    price: 105.00,
-    image: "https://images.unsplash.com/photo-1503152399-f3b077d7d57b?q=80&w=987&auto=format&fit=crop",
-    gender: "Unisex",
-    size: "100ml",
-    rating: 4.7,
-    category: "Gourmand‑Oriental",
-    isBestseller: true,
-    isNew: false,
-    stock: 10,
-    discount: 10,
-    tags: ["Sweet", "Spicy", "Evening"],
-    sku: "VP100UX",
-  },
 ];
 
 
 
-router.get('/allPerfumeProducts', (req, res) => {
-    // Add headers to ensure CORS works
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'GET');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    
-    res.json(perfumeProducts);
-  });
+router.post('/allPerfumeProducts', (req, res) => {
+  const { 
+    sortBy, 
+    category, 
+    size, 
+    inStock,
+    minRating 
+  } = req.body; // Changed from req.query to req.body
+
+  let filteredProducts = [...perfumeProducts];
+
+  // Apply filters
+  if (inStock === true) { // Changed from 'true' string to boolean
+    filteredProducts = filteredProducts.filter(product => product.stock > 0);
+  }
+
+  if (category) {
+    filteredProducts = filteredProducts.filter(product => product.category === category);
+  }
+
+  if (size) {
+    filteredProducts = filteredProducts.filter(product => product.size === size);
+  }
+
+  if (minRating) {
+    filteredProducts = filteredProducts.filter(product => product.rating >= Number(minRating));
+  }
+
+  // Apply sorting
+  if (sortBy) {
+    switch (sortBy) {
+      case 'price-low':
+        filteredProducts.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filteredProducts.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        filteredProducts.sort((a, b) => b.rating - a.rating);
+        break;
+    }
+  }
+
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
   
-  module.exports = router;
+  res.json({
+    success: true,
+    data: filteredProducts,
+    filters: {
+      sortBy,
+      category,
+      size,
+      inStock,
+      minRating
+    }
+  });
+});
+
+// Add OPTIONS handler for CORS
+router.options('/allPerfumeProducts', (req, res) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(200);
+});
+  
+module.exports = router;
