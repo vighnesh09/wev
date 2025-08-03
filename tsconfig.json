@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/app/_homesection/products/page.jsx"  ],
+, "src/app/_homesection/products/page.jsx", "src/backend/model/Product.js", "src/backend/model/Order.js", "src/backend/model/Favorite.js", "src/backend/model/Cart.js", "src/backend/model/User.js"  ],
   "exclude": [
     "node_modules"
   ]
