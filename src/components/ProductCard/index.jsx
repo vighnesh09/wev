@@ -20,10 +20,33 @@ import { motion } from 'framer-motion';
 const ProductCard = ({ product }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const discountedPrice = product.price * (1 - product.discount / 100);
 
-  const cardStyles = {
-    width: {md: 300, xs: '100%'},
+  // Mobile-specific card styles - completely different layout
+  const mobileCardStyles = {
+    width: '100%',
+    height: 'auto',
+    display: 'flex',
+    flexDirection: 'row', // Horizontal layout for mobile
+    position: 'relative',
+    borderRadius: theme.spacing(2),
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+    border: '1px solid rgba(0,0,0,0.06)',
+    mb: 2,
+    '&:hover': {
+      boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+      '& .mobile-image': {
+        transform: 'scale(1.05)'
+      }
+    }
+  };
+
+  // Desktop card styles - original layout
+  const desktopCardStyles = {
+    width: { md: 300, sm: 250 },
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -32,14 +55,21 @@ const ProductCard = ({ product }) => {
     overflow: 'hidden',
     transition: 'all 0.3s ease-in-out',
     backgroundColor: '#fff',
+    boxShadow: theme.shadows[1],
     '&:hover': {
-      transform: isMobile ? 'none' : 'translateY(-8px)',
+      transform: 'translateY(-8px)',
       boxShadow: theme.shadows[8],
       '& .product-image': {
         transform: 'scale(1.05)'
+      },
+      '& .product-actions': {
+        opacity: 1,
+        transform: 'translateY(0)'
       }
     }
   };
+
+  const cardStyles = isMobile ? mobileCardStyles : desktopCardStyles;
 
   const imageContainerStyles = {
     position: 'relative',
@@ -85,11 +115,11 @@ const ProductCard = ({ product }) => {
 
   const contentStyles = {
     flexGrow: 1,
-    padding: theme.spacing(2),
+    padding: { xs: theme.spacing(1.5), sm: theme.spacing(2) },
     display: 'flex',
     flexDirection: 'column',
     '&:last-child': {
-      paddingBottom: theme.spacing(2)
+      paddingBottom: { xs: theme.spacing(1.5), sm: theme.spacing(2) }
     }
   };
 
@@ -119,7 +149,9 @@ const ProductCard = ({ product }) => {
               sx={{ 
                 bgcolor: 'secondary.main',
                 color: 'white',
-                fontWeight: 600
+                fontWeight: 600,
+                fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                height: { xs: 20, sm: 24 }
               }}
             />
           )}
@@ -131,33 +163,47 @@ const ProductCard = ({ product }) => {
               sx={{ 
                 bgcolor: 'primary.main',
                 color: 'white',
-                fontWeight: 600
+                fontWeight: 600,
+                fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                height: { xs: 20, sm: 24 }
               }}
             />
           )}
         </Box>
         {/* Quick Actions */}
         <Box sx={actionsStyles} className="product-actions">
-          <Tooltip title="Add to Wishlist">
+          <Tooltip title={isMobile ? '' : 'Add to Wishlist'}>
             <IconButton 
-              size="small"
+              size={isMobile ? 'small' : 'small'}
               sx={{ 
                 bgcolor: 'white',
-                '&:hover': { bgcolor: 'white' }
+                width: { xs: 28, sm: 32 },
+                height: { xs: 28, sm: 32 },
+                boxShadow: 1,
+                '&:hover': { 
+                  bgcolor: 'white',
+                  transform: 'scale(1.1)' 
+                }
               }}
             >
-              <FavoriteIcon fontSize="small" />
+              <FavoriteIcon fontSize={isMobile ? 'small' : 'small'} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Add to Cart">
+          <Tooltip title={isMobile ? '' : 'Add to Cart'}>
             <IconButton 
-              size="small"
+              size={isMobile ? 'small' : 'small'}
               sx={{ 
                 bgcolor: 'white',
-                '&:hover': { bgcolor: 'white' }
+                width: { xs: 28, sm: 32 },
+                height: { xs: 28, sm: 32 },
+                boxShadow: 1,
+                '&:hover': { 
+                  bgcolor: 'white',
+                  transform: 'scale(1.1)' 
+                }
               }}
             >
-              <ShoppingCartIcon fontSize="small" />
+              <ShoppingCartIcon fontSize={isMobile ? 'small' : 'small'} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -168,43 +214,60 @@ const ProductCard = ({ product }) => {
         <Typography 
           variant="h6"
           sx={{
-            fontSize: { xs: '1rem', sm: '1.1rem' },
+            fontSize: { xs: '0.875rem', sm: '1rem', md: '1.1rem' },
             fontWeight: 600,
-            mb: 1,
-            height: '2.4em',
+            mb: { xs: 0.5, sm: 1 },
+            height: { xs: '2.2em', sm: '2.4em' },
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             display: '-webkit-box',
             WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical'
+            WebkitBoxOrient: 'vertical',
+            lineHeight: 1.2
           }}
         >
           {product.name}
         </Typography>
 
-        <Box sx={{ mb: 1.5 }}>
+        <Box sx={{ mb: { xs: 1, sm: 1.5 } }}>
           <Rating 
             value={product.rating} 
             precision={0.5} 
-            size="small" 
+            size={isMobile ? 'small' : 'small'}
             readOnly 
+            sx={{
+              fontSize: { xs: '1rem', sm: '1.2rem' }
+            }}
           />
         </Box>
 
         <Typography 
           variant="body2" 
           color="text.secondary"
-          sx={{ mb: 2, fontSize: '0.875rem' }}
+          sx={{ 
+            mb: { xs: 1.5, sm: 2 }, 
+            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+            lineHeight: 1.2
+          }}
         >
           {product.category} • {product.size}
         </Typography>
 
         <Box sx={{ mt: 'auto' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: { xs: 0.5, sm: 1 }
+          }}>
             <Typography 
               variant="h6" 
               color="primary.main"
-              sx={{ fontWeight: 600 }}
+              sx={{ 
+                fontWeight: 600,
+                fontSize: { xs: '1rem', sm: '1.1rem' }
+              }}
             >
               ₹{product.price.toFixed(2)}
             </Typography>
@@ -213,6 +276,10 @@ const ProductCard = ({ product }) => {
                 size="small" 
                 color="error" 
                 label={`-${product.discount}%`}
+                sx={{
+                  fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                  height: { xs: 20, sm: 24 }
+                }}
               />
             )}
           </Box>

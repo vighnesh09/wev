@@ -135,40 +135,135 @@ const itemVariants = {
 const products = [
   {
     id: 1,
-    name: 'Eternal Rose',
-    description: 'A captivating blend of Bulgarian rose and vanilla',
-    price: '$189.99',
+    name: 'Velvet Bloom',
+    description: 'An elegant fusion of peony petals and soft sandalwood',
+    price: '$179.00',
     image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80'
   },
   {
     id: 2,
-    name: 'Ocean Breeze',
-    description: 'Fresh marine notes with citrus undertones',
-    price: '$159.99',
+    name: 'Aqua Celeste',
+    description: 'Uplifting citrus zest balanced with oceanic florals',
+    price: '$162.50',
     image: 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80'
   },
   {
     id: 3,
-    name: 'Midnight Oud',
-    description: 'Rich agarwood complemented by spicy notes',
-    price: '$249.99',
+    name: 'Noir Elixir',
+    description: 'Dark tobacco leaf and smoky oud with hints of plum',
+    price: '$265.00',
     image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80'
   },
   {
     id: 4,
-    name: 'Golden Amber',
-    description: 'Warm amber with sweet vanilla and musk',
-    price: '$199.99',
+    name: 'Amber Dusk',
+    description: 'Intoxicating amber, vanilla bean, and soft incense',
+    price: '$210.00',
     image: 'https://images.unsplash.com/photo-1590736704728-f4e505a62012?auto=format&fit=crop&q=80'
   },
-  // Add more products as needed
+  {
+    id: 5,
+    name: 'Blush Iris',
+    description: 'Soft powdery iris wrapped in white florals and musk',
+    price: '$172.99',
+    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 6,
+    name: 'Citrus Riviera',
+    description: 'Zesty bergamot and mandarin with white cedarwood',
+    price: '$149.95',
+    image: 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 7,
+    name: 'Oud Mystique',
+    description: 'A bold blend of Cambodian oud and black pepper',
+    price: '$289.99',
+    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 8,
+    name: 'Sunset Mirage',
+    description: 'A dreamy scent of vanilla, coconut, and heliotrope',
+    price: '$199.00',
+    image: 'https://images.unsplash.com/photo-1590736704728-f4e505a62012?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 9,
+    name: 'Crimson Petal',
+    description: 'A seductive bouquet of Turkish rose and red berries',
+    price: '$185.00',
+    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 10,
+    name: 'Marine Drift',
+    description: 'Aquatic jasmine with driftwood and fresh citrus peel',
+    price: '$159.00',
+    image: 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 11,
+    name: 'Royal Oud',
+    description: 'Opulent Indian oud with saffron and labdanum',
+    price: '$319.00',
+    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 12,
+    name: 'Golden Muse',
+    description: 'A radiant mix of golden amber, pear blossom, and musk',
+    price: '$189.99',
+    image: 'https://images.unsplash.com/photo-1590736704728-f4e505a62012?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 13,
+    name: 'Petal Whisper',
+    description: 'Soft lilac and jasmine kissed with powdery white musk',
+    price: '$168.50',
+    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 14,
+    name: 'Coastal Mist',
+    description: 'Crisp sea air blended with neroli and white grapefruit',
+    price: '$155.00',
+    image: 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80'
+  },
+  {
+    id: 15,
+    name: 'Midnight Ember',
+    description: 'Resinous woods, patchouli, and amber smoked vanilla',
+    price: '$239.00',
+    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80'
+  }
 ];
+
 
 const Products = () => {
   const sliderRef = useRef(null); // Remove TypeScript type
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [activeDot, setActiveDot] = React.useState(0);
 
+  React.useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+  
+    const handleScroll = () => {
+      const scrollLeft = slider.scrollLeft;
+      const scrollWidth = slider.scrollWidth - slider.clientWidth;
+  
+      // Calculate section index (based on 4 dots)
+      const index = Math.round((scrollLeft / scrollWidth) * 3);
+      setActiveDot(index);
+    };
+  
+    slider.addEventListener('scroll', handleScroll);
+    return () => slider.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   const scroll = (direction) => { // Remove TypeScript type
     if (sliderRef.current) {
       const scrollAmount = direction === 'left' ? -300 : 300;
@@ -302,6 +397,22 @@ const Products = () => {
               ))}
             </SliderTrack>
           </SliderContainer>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, zIndex: 1, position: 'relative' }}>
+  {[0, 1, 2, 3].map((index) => (
+    <Box
+      key={index}
+      sx={{
+        width: 12,
+        height: 12,
+        borderRadius: '50%',
+        backgroundColor: activeDot === index ? 'primary.main' : 'grey.400',
+        mx: 0.75,
+        transition: 'all 0.3s ease',
+      }}
+    />
+  ))}
+</Box>
+
         </motion.div>
       </Container>
     </ProductWrapper>

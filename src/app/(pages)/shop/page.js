@@ -57,8 +57,8 @@ export default function Shop() {
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
         />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Container maxWidth="lg">
+        <Box component="main" sx={{ flexGrow: 1, p: { xs: 1.5, sm: 2, md: 3 } }}>
+          <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2 } }}>
             {/* Breadcrumbs */}
             <Breadcrumbs sx={{ mb: 4 }}>
               <Link href="/" color="inherit" underline="hover">
@@ -130,21 +130,23 @@ export default function Shop() {
             {loading && <Loader />}
             <Grid 
               container 
-              spacing={{ xs: 2, md: 3 }}
+              spacing={{ xs: 1.5, sm: 2, md: 3 }}
               sx={{ 
                 mt: { xs: 2, sm: 4 },
                 width: '100%',
-                margin: '0 auto'
+                margin: '0 auto',
+                // Mobile specific optimizations
+                px: { xs: 1, sm: 0 }
               }}
             >
               {products.length > 0 ? (
                 products.map((product, index) => (
                   <Grid 
                     item 
-                    xs={12} 
-                    sm={6} 
-                    md={4} 
-                    lg={3} 
+                    xs={6}  // 2 products per row on mobile
+                    sm={6}  // 2 products per row on small tablets
+                    md={4}  // 3 products per row on medium screens
+                    lg={3}  // 4 products per row on large screens
                     key={product.id}
                     component={motion.div}
                     initial={{ opacity: 0, y: 20 }}
@@ -152,7 +154,10 @@ export default function Shop() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     sx={{ 
                       display: 'flex',
-                      // width: '100%'
+                      // Ensure full width usage
+                      '& > *': {
+                        width: '100%'
+                      }
                     }}
                   >
                     <ProductCard product={product} />
