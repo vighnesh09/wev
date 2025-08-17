@@ -1,11 +1,11 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { thunk } from 'redux-thunk';
-import productReducer from './reducers/productReducer';
+import { configureStore } from "@reduxjs/toolkit";
+import shopSlice from "@/redux/reducers/productReducer";
 
-const rootReducer = combineReducers({
-  products: productReducer,
+const combineReducer = {
+  shop: shopSlice,
+};
+
+export default configureStore({
+  devTools: process.env.NODE_ENV === "development",
+  reducer: combineReducer,
 });
-
-const store = createStore(rootReducer, applyMiddleware(thunk));
-
-export default store;

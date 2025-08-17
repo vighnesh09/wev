@@ -1,38 +1,31 @@
-import {
-  FETCH_PRODUCTS_REQUEST,
-  FETCH_PRODUCTS_SUCCESS,
-  FETCH_PRODUCTS_FAILURE,
-} from '../actions/productActions';
+import { createSlice } from "@reduxjs/toolkit";
+import { getAllPerfumeList } from "@/redux/actions/productActions";
 
-const initialState = {
-  products: [],
-  loading: false,
-  error: null,
-};
-
-const productReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case FETCH_PRODUCTS_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case FETCH_PRODUCTS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        products: action.payload,
-        error: null,
-      };
-    case FETCH_PRODUCTS_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
-    default:
-      return state;
-  }
-};
-
-export default productReducer;
+const shopSlice = createSlice({
+  name: "shop",
+  initialState: {
+    loading: false,
+    error: null,
+    perfumeProductsList: null,
+    success: false,
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getAllPerfumeList.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.success = false;
+    });
+    builder.addCase(getAllPerfumeList.fulfilled, (state, action) => {
+      state.loading = false;
+      state.perfumeProductsList = action.payload;
+      state.success = true;
+    });
+    builder.addCase(getAllPerfumeList.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.success = false;
+    });
+  },
+});
+export const {} = shopSlice.actions;
+export default shopSlice.reducer;
